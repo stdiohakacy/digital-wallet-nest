@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BALANCE_CHANGE_REQUEST_SCHEMA } from '../../schema/balance-change-requests.schema';
 import { BaseOrmEntity } from '../../../../../../libs/infrastructure/persistence/typeorm/schema/base.orm';
+import { LedgerEntryEntity } from '../../../../../wallet/infrastructure/persistence/typeorm/entities/ledger-entry.entity';
 
 @Entity(BALANCE_CHANGE_REQUEST_SCHEMA.TABLE_NAME)
 export class BalanceChangeRequestEntity extends BaseOrmEntity {
@@ -78,10 +79,6 @@ export class BalanceChangeRequestEntity extends BaseOrmEntity {
   })
   processedAt?: Date;
 
-  @Column({
-    name: BALANCE_CHANGE_REQUEST_SCHEMA.COLUMNS.REASON,
-    type: 'text',
-    nullable: true,
-  })
-  reason?: string;
+  @OneToMany(() => LedgerEntryEntity, (entry) => entry.sourceRequest)
+  ledgerEntries?: LedgerEntryEntity[];
 }

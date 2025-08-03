@@ -1,14 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { join } from 'path';
 
-console.log(
-  join(
-    __dirname,
-    '../**/modules/**/infrastructure/persistence/typeorm/entities',
-    '*.entity.{ts,js}',
-  ),
-);
-
 export const typeormConfig: DataSourceOptions = {
   type: 'postgres',
   host: 'localhost',
