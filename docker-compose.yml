@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: digital_wallet_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: digital_wallet_db
+    ports:
+      - '5432:5432'
+    networks:
+      - digital-wallet-network
+    volumes:
+      - digital_wallet_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    hostname: redis
+    restart: on-failure
+    ports:
+      - '6379:6379'
+    volumes:
+      - digital_wallet_cache_data:/data
+    networks:
+      - digital-wallet-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 30s
+      retries: 5
+
+volumes:
+  digital_wallet_data:
+  digital_wallet_cache_data:
+
+networks:
+  digital-wallet-network:
+    driver: bridge
