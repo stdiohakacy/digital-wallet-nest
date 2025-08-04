@@ -18,7 +18,7 @@ export class BalanceChangeRequestMapper
       userId: entity.userId,
       type: entity.type as RequestType,
       amount: new Money({
-        value: entity.amountValue,
+        value: Number(entity.amountValue),
         currency: entity.amountCurrency,
       }),
       method: entity.method as PaymentMethod,

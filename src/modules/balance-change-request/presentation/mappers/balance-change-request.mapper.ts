@@ -5,7 +5,7 @@ import { PaymentMethodDto } from '../rest/dtos/payment-method.dto';
 import { PaymentMethod } from '@modules/balance-change-request/domain/enums/payment-method.enum';
 import { CreateDepositRequestCommandProps } from '@modules/balance-change-request/application/ports/inbound/commands/create-deposit-request.command';
 
-export class CreateDepositRequestMapper {
+export class BalanceChangeRequestMapper {
   private mapPaymentMethod(method: string) {
     switch (method) {
       case PaymentMethodDto.BANK_TRANSFER:
@@ -35,5 +35,26 @@ export class CreateDepositRequestMapper {
     });
   }
 
-  static toResponse() {}
+  static toResponse(
+    request: BalanceChangeRequest | BalanceChangeRequest[],
+  ): any {
+    if (Array.isArray(request)) {
+      return request.map((req) => this.toResponse(req));
+    }
+
+    return {
+      id: request.id.getValue(),
+      userId: request.getProps().userId,
+      type: request.getProps().type,
+      amount: request.getProps().amount.value,
+      currency: request.getProps().amount.currency,
+      method: request.getProps().method,
+      remarks: request.getProps().remarks,
+      status: request.getProps().status,
+      createdAt: request.getProps().createdAt,
+      approvedAt: request.getProps().approvedAt,
+      rejectedAt: request.getProps().rejectedAt,
+      processedAt: request.getProps().processedAt,
+    };
+  }
 }

@@ -53,6 +53,7 @@ export abstract class BaseRepositoryImpl<
       const domainEntities = entities.map((entity) =>
         this.mapper.toDomain(entity),
       );
+
       return Ok(domainEntities);
     } catch (error) {
       return Err(

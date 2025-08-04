@@ -7,7 +7,7 @@ export const typeormConfig: DataSourceOptions = {
   port: 5432,
   username: 'postgres',
   password: 'postgres',
-  database: 'digital_wallet_db',
+  database: 'postgres',
   entities: [
     join(
       __dirname,
