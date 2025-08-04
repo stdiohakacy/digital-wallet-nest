@@ -14,7 +14,6 @@ export class CreateDepositRequestMapper {
         return PaymentMethod.CREDIT_CARD;
       case PaymentMethodDto.E_WALLET:
         return PaymentMethod.E_WALLET;
-
       case PaymentMethodDto.QR_CODE:
         return PaymentMethod.QR_CODE;
     }
