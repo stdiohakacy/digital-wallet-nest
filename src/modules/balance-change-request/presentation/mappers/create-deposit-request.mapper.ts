@@ -1,14 +1,12 @@
 import { BalanceChangeRequest } from '@modules/balance-change-request/domain/aggregate/balance-change-request.aggregate';
-import { CreateDepositRequestDto } from '../rest/dtos/create-deposit-request.dto';
 import { RequestType } from '@modules/balance-change-request/domain/enums/request-type.enum';
 import { Money } from '@modules/shared/vo/money.vo';
 import { PaymentMethodDto } from '../rest/dtos/payment-method.dto';
 import { PaymentMethod } from '@modules/balance-change-request/domain/enums/payment-method.enum';
-import { Injectable } from '@nestjs/common';
+import { CreateDepositRequestCommandProps } from '@modules/balance-change-request/application/ports/inbound/commands/create-deposit-request.command';
 
-@Injectable()
 export class CreateDepositRequestMapper {
-  private mapPaymentMethod(method: PaymentMethodDto) {
+  private mapPaymentMethod(method: string) {
     switch (method) {
       case PaymentMethodDto.BANK_TRANSFER:
         return PaymentMethod.BANK_TRANSFER;
@@ -16,19 +14,25 @@ export class CreateDepositRequestMapper {
         return PaymentMethod.CREDIT_CARD;
       case PaymentMethodDto.E_WALLET:
         return PaymentMethod.E_WALLET;
+
+      case PaymentMethodDto.QR_CODE:
+        return PaymentMethod.QR_CODE;
     }
   }
 
   static toAggregate(
-    dto: CreateDepositRequestDto,
+    commandProps: CreateDepositRequestCommandProps,
     userId: string,
   ): BalanceChangeRequest {
     return BalanceChangeRequest.create({
       userId,
       type: RequestType.DEPOSIT,
-      amount: new Money({ value: dto.amount, currency: dto.currency }),
-      method: this.prototype.mapPaymentMethod(dto.method),
-      remarks: dto.remarks,
+      amount: new Money({
+        value: commandProps.amount,
+        currency: commandProps.currency,
+      }),
+      method: this.prototype.mapPaymentMethod(commandProps.method),
+      remarks: commandProps.remarks,
     });
   }
 

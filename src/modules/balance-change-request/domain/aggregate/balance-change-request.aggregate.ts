@@ -17,7 +17,8 @@ interface CreateBalanceChangeRequestProps {
   remarks?: string;
 }
 
-interface BalanceChangeRequestProps extends CreateBalanceChangeRequestProps {
+export interface BalanceChangeRequestProps
+  extends CreateBalanceChangeRequestProps {
   status: RequestStatus;
   createdAt: Date;
   approvedAt?: Date;

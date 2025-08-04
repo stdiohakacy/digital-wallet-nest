@@ -1,7 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { plainToInstance } from 'class-transformer';
-import { Result } from 'oxide.ts';
+import { Err, match, Ok, Result } from 'oxide.ts';
 import { ExceptionBase } from '@libs/exceptions';
 import { CreateDepositRequestDto } from '../dtos/create-deposit-request.dto';
 import {
@@ -9,6 +9,8 @@ import {
   CreateDepositRequestCommandProps,
 } from '@modules/balance-change-request/application/ports/inbound/commands/create-deposit-request.command';
 import { BalanceChangeRequest } from '@modules/balance-change-request/domain/aggregate/balance-change-request.aggregate';
+import { UniqueEntityID } from '@libs/domain/unique-entity-id';
+import { DomainToRestErrorMapper } from '../../mappers/error-response.mapper';
 
 @Controller('balance-change-requests')
 export class BalanceChangeRequestController {
@@ -21,18 +23,20 @@ export class BalanceChangeRequestController {
       body,
     );
 
-    const result: Result<BalanceChangeRequest, ExceptionBase> =
-      await this.commandBus.execute(
-        new CreateDepositRequestCommand(commandProps),
-      );
+    const result: Result<
+      UniqueEntityID<string>,
+      ExceptionBase
+    > = await this.commandBus.execute(
+      new CreateDepositRequestCommand(commandProps),
+    );
 
-    // return match(result, {
-    //   Ok: (product: Product) => {
-    //     return ProductResponseMapper.toResponse(product);
-    //   },
-    //   Err: (error: Error) => {
-    //     throw DomainToRestErrorMapper.map(error);
-    //   },
-    // });
+    return match(result, {
+      Ok: (id: UniqueEntityID<string>) => {
+        return id;
+      },
+      Err: (error: Error) => {
+        throw DomainToRestErrorMapper.map(error);
+      },
+    });
   }
 }
