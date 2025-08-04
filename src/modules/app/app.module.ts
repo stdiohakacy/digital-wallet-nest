@@ -1,8 +1,9 @@
+import { BalanceChangeRequestModule } from '@modules/balance-change-request/balance-change-request.module';
 import { Module } from '@nestjs/common';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [CommonModule],
+  imports: [CommonModule, BalanceChangeRequestModule],
   controllers: [],
   providers: [],
 })

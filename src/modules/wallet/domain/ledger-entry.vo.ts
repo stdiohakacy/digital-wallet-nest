@@ -2,13 +2,14 @@ import { BaseValueObject } from '../../../libs/domain';
 import { LedgerEntryType } from './enums/ledger-entry.enum';
 import { ArgumentNotProvidedException } from '../../../libs/exceptions';
 import { Money } from '../../shared/vo/money.vo';
+import { UniqueEntityID } from '../../../libs/domain/unique-entity-id';
 
 export interface LedgerEntryProps {
   type: LedgerEntryType;
   amount: Money;
   balanceAfter: Money;
   timestamp: Date;
-  sourceRef: string;
+  sourceRef: UniqueEntityID<string>;
   remark?: string;
 }
 
@@ -51,7 +52,7 @@ export class LedgerEntry extends BaseValueObject<LedgerEntryProps> {
     return this.props.timestamp;
   }
 
-  get sourceRef(): string {
+  get sourceRef(): UniqueEntityID<string> {
     return this.props.sourceRef;
   }
 

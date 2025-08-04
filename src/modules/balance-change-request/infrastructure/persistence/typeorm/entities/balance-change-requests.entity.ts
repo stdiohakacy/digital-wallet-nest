@@ -78,7 +78,4 @@ export class BalanceChangeRequestEntity extends BaseOrmEntity {
     nullable: true,
   })
   processedAt?: Date;
-
-  @OneToMany(() => LedgerEntryEntity, (entry) => entry.sourceRequest)
-  ledgerEntries?: LedgerEntryEntity[];
 }

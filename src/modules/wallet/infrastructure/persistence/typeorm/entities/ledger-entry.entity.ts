@@ -49,11 +49,15 @@ export class LedgerEntryEntity extends BaseOrmEntity {
   })
   sourceRef: string;
 
-  @ManyToOne(() => WalletEntity, (wallet) => wallet.ledgers)
-  @JoinColumn({ name: LEDGER_ENTRY_SCHEMA.COLUMNS.WALLET_ID })
-  wallet: WalletEntity;
-
   @ManyToOne(() => BalanceChangeRequestEntity, { nullable: true })
   @JoinColumn({ name: LEDGER_ENTRY_SCHEMA.COLUMNS.SOURCE_REF })
   sourceRequest?: BalanceChangeRequestEntity;
+
+  @ManyToOne(
+    () => require('./wallet.entity').WalletEntity,
+    (wallet: WalletEntity) => wallet.ledgers,
+    { nullable: false },
+  )
+  @JoinColumn({ name: LEDGER_ENTRY_SCHEMA.COLUMNS.WALLET_ID })
+  wallet: WalletEntity;
 }

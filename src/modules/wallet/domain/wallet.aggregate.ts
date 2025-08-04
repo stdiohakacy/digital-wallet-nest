@@ -59,7 +59,7 @@ export class Wallet extends BaseAggregateRoot<WalletProps> {
         amount,
         balanceAfter: this.props.balance,
         timestamp: new Date(),
-        sourceRef,
+        sourceRef: new UniqueEntityID<string>(sourceRef),
         remark: 'Increase operation',
       }),
     );
@@ -88,7 +88,7 @@ export class Wallet extends BaseAggregateRoot<WalletProps> {
         amount,
         balanceAfter: this.props.balance,
         timestamp: new Date(),
-        sourceRef,
+        sourceRef: new UniqueEntityID<string>(sourceRef),
         remark: 'Decrease operation',
       }),
     );

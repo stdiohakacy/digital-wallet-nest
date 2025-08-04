@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { BaseAggregateRoot } from '../../../../libs/domain';
 import { UniqueEntityID } from '../../../../libs/domain/unique-entity-id';
 import { ArgumentNotProvidedException } from '../../../../libs/exceptions';
@@ -8,28 +9,45 @@ import { RequestType } from '../enums/request-type.enum';
 import { DepositApprovedDomainEvent } from '../events/deposit-approved.event';
 import { DepositRejectedDomainEvent } from '../events/deposit-rejected.event';
 
-interface BalanceChangeRequestProps {
+interface CreateBalanceChangeRequestProps {
   userId: string;
   type: RequestType;
   amount: Money;
   method: PaymentMethod;
-  status: RequestStatus;
   remarks?: string;
+}
+
+interface BalanceChangeRequestProps extends CreateBalanceChangeRequestProps {
+  status: RequestStatus;
   createdAt: Date;
   approvedAt?: Date;
   rejectedAt?: Date;
+  processedAt?: Date;
 }
 
 export class BalanceChangeRequest extends BaseAggregateRoot<BalanceChangeRequestProps> {
-  constructor(props: {
-    id: UniqueEntityID<string>;
-    props: BalanceChangeRequestProps;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: string;
-    updatedBy?: string;
-  }) {
-    super(props);
+  static create(
+    props: CreateBalanceChangeRequestProps,
+    id?: UniqueEntityID<string>,
+  ): BalanceChangeRequest {
+    const now = new Date();
+
+    const balanceChangeRequestProps: BalanceChangeRequestProps = {
+      ...props,
+      status: RequestStatus.PENDING,
+      createdAt: now,
+      approvedAt: undefined,
+      rejectedAt: undefined,
+    };
+
+    const request = new BalanceChangeRequest({
+      id: id ?? new UniqueEntityID(randomUUID()),
+      props: balanceChangeRequestProps,
+      createdAt: now,
+      updatedAt: now,
+    });
+    request.validate();
+    return request;
   }
 
   public validate(): void {
@@ -101,7 +119,7 @@ export class BalanceChangeRequest extends BaseAggregateRoot<BalanceChangeRequest
     const event = new DepositRejectedDomainEvent({
       aggregateId: this.id.toString(),
       requestId: this.id.toString(),
-      eventName: 'DepositApproved',
+      eventName: 'DepositRejected',
       version: 1,
       rejectedBy: 'cornal-admin-uuid',
       rejectedAt: this.props.rejectedAt,
@@ -114,12 +132,13 @@ export class BalanceChangeRequest extends BaseAggregateRoot<BalanceChangeRequest
   }
 
   public markAsProcessed(): void {
-    if (this.props.status !== RequestStatus.PENDING) {
+    if (this.props.status !== RequestStatus.APPROVED) {
       throw new ArgumentNotProvidedException(
         'Request must be pending to process',
       );
     }
     this.props.status = RequestStatus.PROCESSED;
+    this.props.processedAt = new Date();
     this.markUpdated();
   }
 }

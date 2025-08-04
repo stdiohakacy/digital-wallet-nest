@@ -18,6 +18,9 @@ export class WalletEntity extends BaseOrmEntity {
   })
   balanceCurrency: string;
 
-  @OneToMany(() => LedgerEntryEntity, (entry) => entry.wallet)
+  @OneToMany(
+    () => require('./ledger-entry.entity').LedgerEntryEntity,
+    (ledger: LedgerEntryEntity) => ledger.wallet,
+  )
   ledgers: LedgerEntryEntity[];
 }
